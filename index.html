@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Dev Studio PRO</title>
+
+<style>
+:root{
+--primary:#ff4757;
+--dark:#2f3542;
+--bg:#f1f2f6;
+--editor:#1e272e;
+}
+
+body.dark{
+--bg:#1e272e;
+--dark:#f5f6fa;
+--editor:#2f3640;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+font-family:Segoe UI,sans-serif;
+background:var(--bg);
+color:var(--dark);
+display:flex;
+flex-direction:column;
+height:100vh;
+transition:0.3s;
+}
+
+header{
+background:var(--primary);
+color:white;
+padding:15px;
+text-align:center;
+font-weight:bold;
+}
+
+.topbar{
+display:flex;
+gap:10px;
+padding:10px;
+background:#ccc;
+flex-wrap:wrap;
+}
+
+input{
+padding:6px;
+border-radius:6px;
+border:1px solid #aaa;
+}
+
+button{
+padding:6px 10px;
+border:none;
+border-radius:6px;
+background:var(--primary);
+color:white;
+cursor:pointer;
+}
+
+button:hover{opacity:0.8;}
+
+.tabs{
+display:flex;
+background:var(--dark);
+}
+
+.tabs button{
+flex:1;
+background:none;
+border:none;
+color:white;
+padding:10px;
+cursor:pointer;
+}
+
+.tabs button.active{
+background:var(--primary);
+}
+
+.container{
+flex:1;
+display:flex;
+}
+
+textarea{
+flex:1;
+padding:15px;
+border:none;
+outline:none;
+font-family:monospace;
+font-size:14px;
+background:var(--editor);
+color:#00ffcc;
+display:none;
+}
+
+textarea.active{display:block;}
+
+iframe{
+flex:1;
+border:none;
+background:white;
+}
+
+@media(max-width:900px){
+.container{flex-direction:column;}
+textarea,iframe{height:50%;}
+}
+</style>
+</head>
+
+<body>
+
+<header>🚀 Gert-Jan Power Dev Studio PRO</header>
+
+<div class="topbar">
+<input id="projectName" placeholder="Project naam">
+<button onclick="run()">▶ Run</button>
+<button onclick="saveProject()">💾 Save</button>
+<button onclick="loadProject()">📂 Load</button>
+<button onclick="download()">📦 Export</button>
+<button onclick="explain()">🤖 Explain</button>
+<button onclick="toggleDark()">🌙</button>
+</div>
+
+<div class="tabs">
+<button class="active" onclick="switchTab('html')">HTML</button>
+<button onclick="switchTab('css')">CSS</button>
+<button onclick="switchTab('js')">JS</button>
+</div>
+
+<div class="container">
+<textarea id="html" class="active">
+<h1>🔥 Power Platform</h1>
+<p>Welkom Gert-Jan</p>
+</textarea>
+
+<textarea id="css">
+body{font-family:Arial;text-align:center;background:#f4f4f4;}
+h1{color:#ff4757;}
+</textarea>
+
+<textarea id="js">
+console.log("Power Active 💪");
+</textarea>
+
+<iframe id="preview"></iframe>
+</div>
+
+<script>
+function switchTab(tab){
+document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+event.target.classList.add("active");
+document.querySelectorAll("textarea").forEach(t=>t.classList.remove("active"));
+document.getElementById(tab).classList.add("active");
+}
+
+function run(){
+const html=document.getElementById("html").value;
+const css="<style>"+document.getElementById("css").value+"</style>";
+const js="<script>"+document.getElementById("js").value+"<\/script>";
+const preview=document.getElementById("preview").contentWindow.document;
+preview.open();
+preview.write(html+css+js);
+preview.close();
+}
+
+function saveProject(){
+const name=document.getElementById("projectName").value;
+if(!name)return alert("Geef project naam");
+const data={
+html:html.value,
+css:css.value,
+js:js.value
+};
+localStorage.setItem("project_"+name,JSON.stringify(data));
+alert("Project opgeslagen 💪");
+}
+
+function loadProject(){
+const name=document.getElementById("projectName").value;
+const data=JSON.parse(localStorage.getItem("project_"+name));
+if(!data)return alert("Niet gevonden");
+html.value=data.html;
+css.value=data.css;
+js.value=data.js;
+run();
+}
+
+function download(){
+const htmlCode=document.getElementById("html").value;
+const cssCode="<style>"+css.value+"</style>";
+const jsCode="<script>"+js.value+"<\/script>";
+const blob=new Blob([htmlCode+cssCode+jsCode],{type:"text/html"});
+const a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download="power-project.html";
+a.click();
+}
+
+function explain(){
+alert("🤖 Deze code combineert HTML structuur, CSS styling en JavaScript functionaliteit in één live preview omgeving.");
+}
+
+function toggleDark(){
+document.body.classList.toggle("dark");
+}
+
+run();
+</script>
+
+</body>
+</html>
